@@ -1,0 +1,15 @@
+{
+    "confirmed_task": "send mail to kausprat@amazon.com with subject \"hi\" and content \"hello\"",
+    "website": "https://mail.google.com",
+    "task_id": "2024-04-13_12-44-30",
+    "success_or_not": "",
+    "num_step": 5,
+    "action_history": [
+        "[div role=\"button\"] Compose -> CLICK",
+        "[input role=\"combobox\" type=\"text\"] aria-label=\"To recipients\" -> TYPE: kausprat@amazon.com",
+        "[input] aria-label=\"Subject\" name=\"subjectbox\" placeholder=\"Subject\" -> TYPE: hi",
+        "[div role=\"textbox\"] Prateek Kaushal Final Year Student Department of Ocean Engg. & Naval Architecture IIT Kharagpur +91 7431055888| prateekkaushaliitkgp@gmail.com Facebook | LinkedIn | Github -> TYPE: hello",
+        "[div role=\"button\"] Send -> CLICK"
+    ],
+    "exit_by": "The model determined a completion."
+}

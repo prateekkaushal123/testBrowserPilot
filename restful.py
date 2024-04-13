@@ -1,7 +1,8 @@
 # using flask_restful 
 from flask import Flask, jsonify, request , make_response
 from flask_restful import Resource, Api 
-from browserpilot.agents.gpt_selenium_agent import GPTSeleniumAgent
+import json
+import os
   
 # creating the flask app 
 app = Flask(__name__) 
@@ -25,28 +26,27 @@ class Hello(Resource):
     def post(self): 
           
         data = request.get_json()     # status code 
-        instructions_buffalo = """Go to Google.com
-Find all textareas.
-Find the first visible textarea.
-Click on the first visible textarea.
-Type in "buffalo buffalo buffalo buffalo buffalo" and press enter.
-Wait 2 seconds.
-Find all anchor elements that link to Wikipedia.
-Click on the first one.
-Wait for 10 seconds.
-"""
+        instructions_buffalo = ""
+        website = "https://google.com"
 
         #return jsonify({'data': data}), 200
         for key, value in data.items():
             if key == "instructions":
-                instructions_buffalo = value;
+                instructions_buffalo = value
+            if key == "website":
+                website = value
             print(key, value)
         print(instructions_buffalo)
-        agent = GPTSeleniumAgent(instructions_buffalo,"/home/prateek/workspace/browserpilot/chromedriver", 
-                         {"--profile-directory":"Default"}, "/home/prateek/.config/google-chrome",
-                         False, False,"gpt-3.5-turbo","gpt-3.5-turbo", None,
-                         False,"",None, False)
-        agent.run()
+        
+        with open('input.json', 'w') as f:
+            json.dump([{'confirmed_task': instructions_buffalo, 'website': website}], f)
+
+        os.system('python /home/prateek/workspace/SeeAct/src/seeact.py')
+        #agent = GPTSeleniumAgent(instructions_buffalo,"/home/prateek/workspace/browserpilot/chromedriver", 
+         #                {"--profile-directory":"Default"}, "/home/prateek/.config/google-chrome",
+          #               False, False,"gpt-3.5-turbo","gpt-3.5-turbo", None,
+           #              False,"",None, False)
+        #agent.run()
         return make_response(jsonify({'data': data}), 200)
   
   
@@ -54,13 +54,19 @@ Wait for 10 seconds.
 class Square(Resource): 
   
     def get(self, num): 
-  
-        return jsonify({'square': num**2}) 
+        print("1")
+        y = open('output.json', "r")
+        print("2")
+        data = json.loads(y.read())
+        print("3")
+        print(data)
+        #return make_response(jsonify(data), 200)
+        return data
   
   
 # adding the defined resources along with their corresponding urls 
 api.add_resource(Hello, '/') 
-api.add_resource(Square, '/square/<int:num>') 
+api.add_resource(Square, '/getStatus/<string:num>') 
   
   
 # driver function 
