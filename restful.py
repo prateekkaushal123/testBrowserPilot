@@ -2,7 +2,8 @@
 from flask import Flask, jsonify, request , make_response
 from flask_restful import Resource, Api 
 import json
-import os
+import subprocess
+#from background_thread import BackgroundThreadFactory, TASKS_QUEUE
   
 # creating the flask app 
 app = Flask(__name__) 
@@ -41,7 +42,8 @@ class Hello(Resource):
         with open('input.json', 'w') as f:
             json.dump([{'confirmed_task': instructions_buffalo, 'website': website}], f)
 
-        os.system('python /home/prateek/workspace/SeeAct/src/seeact.py')
+        #os.spawnvpe(os.P_NOWAIT, 'python /home/prateek/workspace/SeeAct/src/seeact.py')
+        subprocess.Popen(["python", "/home/prateek/workspace/SeeAct/src/seeact.py"])
         #agent = GPTSeleniumAgent(instructions_buffalo,"/home/prateek/workspace/browserpilot/chromedriver", 
          #                {"--profile-directory":"Default"}, "/home/prateek/.config/google-chrome",
           #               False, False,"gpt-3.5-turbo","gpt-3.5-turbo", None,
@@ -54,11 +56,8 @@ class Hello(Resource):
 class Square(Resource): 
   
     def get(self, num): 
-        print("1")
         y = open('output.json', "r")
-        print("2")
         data = json.loads(y.read())
-        print("3")
         print(data)
         #return make_response(jsonify(data), 200)
         return data
