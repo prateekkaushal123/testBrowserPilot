@@ -4,6 +4,7 @@ from flask_restful import Resource, Api
 import json
 import subprocess
 import os
+from pathlib import Path
 #from background_thread import BackgroundThreadFactory, TASKS_QUEUE
   
 # creating the flask app 
@@ -56,12 +57,22 @@ class Hello(Resource):
 # another resource to calculate the square of a number 
 class Square(Resource): 
   
-    def get(self, num): 
-        y = open('../SeeAct/online_results/demo/currentStatus.txt', "r")
-        data = y.readlines()
-        print(data)
+    def get(self, num):
+        my_dir = Path("../SeeAct/online_results/demo")
+        status = Path("../SeeAct/online_results/demo/currentStatus.txt")
+        result = Path("../SeeAct/online_results/demo/result.json") 
+        if my_dir.is_dir():
+            current_status = "Not available"
+            result_data = "Pending"
+            if status.is_file():
+                y = open('../SeeAct/online_results/demo/currentStatus.txt', "r")
+                current_status = y.readlines()
+                print(current_status)
+            if result.is_file():
+                result_data = "Complete"
         #return make_response(jsonify(data), 200)
-        return make_response(jsonify({'currentStaus': data}), 200)
+            return make_response(jsonify({'Result': result_data, 'currentStaus': current_status}), 200)
+        return make_response(jsonify({'currentStaus': "Internal_Error"}), 500)
   
   
 # adding the defined resources along with their corresponding urls 
