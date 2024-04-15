@@ -39,10 +39,9 @@ class Hello(Resource):
             print(key, value)
         print(instructions_buffalo)
         
-        with open('input.json', 'w') as f:
-            json.dump([{'confirmed_task': instructions_buffalo, 'website': website}], f)
+        with open('../SeeAct/data/online_tasks/input_task.json', 'w') as f:
+            json.dump([{'confirmed_task': instructions_buffalo, 'website': website, 'task_id': 'demo'}], f)
 
-        #os.spawnvpe(os.P_NOWAIT, 'python /home/prateek/workspace/SeeAct/src/seeact.py')
         subprocess.Popen(["python", "/home/prateek/workspace/SeeAct/src/seeact.py"])
         #agent = GPTSeleniumAgent(instructions_buffalo,"/home/prateek/workspace/browserpilot/chromedriver", 
          #                {"--profile-directory":"Default"}, "/home/prateek/.config/google-chrome",
@@ -56,11 +55,11 @@ class Hello(Resource):
 class Square(Resource): 
   
     def get(self, num): 
-        y = open('output.json', "r")
-        data = json.loads(y.read())
+        y = open('../SeeAct/online_results/demo/currentStatus.txt', "r")
+        data = y.readlines()
         print(data)
         #return make_response(jsonify(data), 200)
-        return data
+        return make_response(jsonify({'currentStaus': data}), 200)
   
   
 # adding the defined resources along with their corresponding urls 
