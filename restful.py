@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request , make_response
 from flask_restful import Resource, Api 
 import json
 import subprocess
+import os
 #from background_thread import BackgroundThreadFactory, TASKS_QUEUE
   
 # creating the flask app 
@@ -42,6 +43,7 @@ class Hello(Resource):
         with open('../SeeAct/data/online_tasks/input_task.json', 'w') as f:
             json.dump([{'confirmed_task': instructions_buffalo, 'website': website, 'task_id': 'demo'}], f)
 
+        os.system('rm -r ../SeeAct/online_results/demo')
         subprocess.Popen(["python", "/home/prateek/workspace/SeeAct/src/seeact.py"])
         #agent = GPTSeleniumAgent(instructions_buffalo,"/home/prateek/workspace/browserpilot/chromedriver", 
          #                {"--profile-directory":"Default"}, "/home/prateek/.config/google-chrome",
