@@ -3,8 +3,11 @@ from flask import Flask, jsonify, request , make_response
 from flask_restful import Resource, Api 
 import json
 import subprocess
+import socket
 import os
 from pathlib import Path
+import requests
+from time import sleep
 #from background_thread import BackgroundThreadFactory, TASKS_QUEUE
   
 # creating the flask app 
@@ -31,6 +34,18 @@ class Hello(Resource):
         data = request.get_json()     # status code 
         instructions_buffalo = ""
         website = "https://google.com"
+        portActive = True
+        port = 9222
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            portActive = s.connect_ex(('localhost', port)) == 0
+
+        print('Port 9222 status : ', portActive)
+        if portActive == False:
+            print('Launching chrome in remote debugging mode')
+            os.system("nohup google-chrome --headless --remote-debugging-port=9222 --remote-debugging-address=0.0.0.0 --user-data-dir=\"/home/prateek/.config/google-chrome\"&")
+            sleep(2)
+
 
         #return jsonify({'data': data}), 200
         for key, value in data.items():
@@ -40,18 +55,16 @@ class Hello(Resource):
                 website = value
             print(key, value)
         print(instructions_buffalo)
+        if website == "":
+            website = "https://google.com"
         
         with open('../SeeAct/data/online_tasks/input_task.json', 'w') as f:
             json.dump([{'confirmed_task': instructions_buffalo, 'website': website, 'task_id': 'demo'}], f)
 
         os.system('rm -r ../SeeAct/online_results/demo')
-        subprocess.Popen(["python", "/home/prateek/workspace/SeeAct/src/seeact.py"])
-        #agent = GPTSeleniumAgent(instructions_buffalo,"/home/prateek/workspace/browserpilot/chromedriver", 
-         #                {"--profile-directory":"Default"}, "/home/prateek/.config/google-chrome",
-          #               False, False,"gpt-3.5-turbo","gpt-3.5-turbo", None,
-           #              False,"",None, False)
-        #agent.run()
+        subprocess.Popen(["python", "../SeeAct/src/seeact.py"])
         return make_response(jsonify({'data': data}), 200)
+    
   
   
 # another resource to calculate the square of a number 
@@ -66,7 +79,7 @@ class Square(Resource):
             result_data = "Pending"
             if status.is_file():
                 y = open('../SeeAct/online_results/demo/currentStatus.txt', "r")
-                current_status = y.readlines()
+                current_status = y.read()
                 print(current_status)
             if result.is_file():
                 result_data = "Complete"
