@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import requests
 from time import sleep
+import uuid
 #from background_thread import BackgroundThreadFactory, TASKS_QUEUE
   
 # creating the flask app 
@@ -36,6 +37,7 @@ class Hello(Resource):
         website = "https://google.com"
         portActive = True
         port = 9222
+        uuid_tracking = str(uuid.uuid4())
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             portActive = s.connect_ex(('localhost', port)) == 0
@@ -59,11 +61,11 @@ class Hello(Resource):
             website = "https://google.com"
         
         with open('../SeeAct/data/online_tasks/input_task.json', 'w') as f:
-            json.dump([{'confirmed_task': instructions_buffalo, 'website': website, 'task_id': 'demo'}], f)
+            json.dump([{'confirmed_task': instructions_buffalo, 'website': website, 'task_id': uuid_tracking}], f)
 
-        os.system('rm -r ../SeeAct/online_results/demo')
+        #os.system('rm -r ../SeeAct/online_results/demo')
         subprocess.Popen(["python", "../SeeAct/src/seeact.py"])
-        return make_response(jsonify({'data': data}), 200)
+        return make_response(jsonify({'data': uuid_tracking}), 200)
     
   
   
@@ -71,14 +73,18 @@ class Hello(Resource):
 class Square(Resource): 
   
     def get(self, num):
-        my_dir = Path("../SeeAct/online_results/demo")
-        status = Path("../SeeAct/online_results/demo/currentStatus.txt")
-        result = Path("../SeeAct/online_results/demo/result.json") 
+        trackingId = "demo"
+        if num != "uuid":
+            trackingId = num
+
+        my_dir = Path("../SeeAct/online_results/" + trackingId)
+        status = Path("../SeeAct/online_results/" +trackingId + "/currentStatus.txt")
+        result = Path("../SeeAct/online_results/" +trackingId+ "/result.json") 
         if my_dir.is_dir():
             current_status = "Not available"
             result_data = "Pending"
             if status.is_file():
-                y = open('../SeeAct/online_results/demo/currentStatus.txt', "r")
+                y = open("../SeeAct/online_results/" +trackingId +"/currentStatus.txt", "r")
                 current_status = y.read()
                 print(current_status)
             if result.is_file():
@@ -95,5 +101,5 @@ api.add_resource(Square, '/getStatus/<string:num>')
   
 # driver function 
 if __name__ == '__main__': 
-  
+
     app.run(debug = False) 
